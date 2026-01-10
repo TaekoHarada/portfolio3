@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  scroll-behavior: smooth;
+  @apply text-customGray;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .paused {
+    animation-play-state: paused;
+  }
+}
+
+/* styles/globals.css or a dedicated CSS file */
+@layer utilities {
+  .hover-underline-animation {
+    position: relative;
+    display: inline-block;
+  }
+
+  .hover-underline-animation::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: dimgray;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform 0.25s ease-out;
+  }
+
+  .hover-underline-animation:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* 左から */
+
+.fadeLeft {
+  animation-name: fadeLeftAnime;
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+@keyframes fadeLeftAnime {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 下から */
+
+.fadeUp {
+  animation-name: fadeUpAnime;
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+@keyframes fadeUpAnime {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* その場で */
+.fadeIn {
+  animation-name: fadeInAnime;
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInAnime {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
