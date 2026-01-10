@@ -1,36 +1,211 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Portfolio Website
 
-## Getting Started
+AWS クラウドサービスを活用した個人ポートフォリオサイト（Cloud Resume Challenge）
 
-First, run the development server:
+## 🏗️ アーキテクチャ
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+┌─────────────┐
+│   Route 53  │ (独自ドメイン管理)
+└──────┬──────┘
+       │
+┌──────▼──────────┐
+│  CloudFront     │ (CDN・HTTPS化)
+└──────┬──────────┘
+       │
+┌──────▼──────────┐
+│  S3 Bucket      │ (静的サイトホスティング)
+│  (Next.js)      │
+└─────────────────┘
+
+       │ お問い合わせ
+       ▼
+┌─────────────────┐
+│  API Gateway    │ (REST API)
+└──────┬──────────┘
+       │
+┌──────▼──────────┐
+│  Lambda         │ (Node.js)
+└──────┬──────────┘
+       │
+┌──────▼──────────┐
+│  SES            │ (メール送信)
+└─────────────────┘
+
+       │ 訪問者カウント
+       ▼
+┌─────────────────┐
+│  DynamoDB       │ (訪問者数保存)
+└─────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ 技術スタック
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### フロントエンド
+- **Next.js 14** - React フレームワーク（静的エクスポート）
+- **TypeScript** - 型安全性
+- **Tailwind CSS** - スタイリング
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### AWS インフラ
+- **S3** - 静的サイトホスティング
+- **CloudFront** - CDN・エッジ配信・HTTPS化
+- **Route 53** - DNS管理
+- **Lambda** - サーバーレス関数（Node.js 20.x）
+- **API Gateway** - REST API エンドポイント
+- **SES** - メール送信サービス
+- **DynamoDB** - 訪問者数カウンター
+- **IAM** - アクセス制御
 
-## Learn More
+### CI/CD
+- **GitHub Actions** - 自動デプロイパイプライン
+- **AWS CLI** - デプロイ自動化
 
-To learn more about Next.js, take a look at the following resources:
+## 📋 前提条件
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 18.x 以上
+- npm または yarn
+- AWS アカウント
+- AWS CLI 設定済み
+- Git
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🚀 ローカル開発
 
-## Deploy on Vercel
+### 1. リポジトリのクローン
+```bash
+git clone https://github.com/your-username/portfolio.git
+cd portfolio
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. 依存関係のインストール
+```bash
+npm install
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 3. 環境変数の設定
+`.env.local` を作成:
+```env
+NEXT_PUBLIC_API_ENDPOINT=https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/prod
+```
+
+### 4. 開発サーバーの起動
+```bash
+npm run dev
+```
+
+ブラウザで `http://localhost:3000` を開く
+
+### 5. 本番ビルド
+```bash
+npm run build
+```
+
+静的ファイルが `out/` ディレクトリに生成されます。
+
+## 📦 デプロイ手順
+
+### Step 1: S3バケットの作成
+```bash
+aws s3 mb s3://your-portfolio-bucket --region ap-northeast-1
+
+aws s3 website s3://your-portfolio-bucket \
+  --index-document index.html \
+  --error-document 404.html
+```
+
+### Step 2: バケットポリシーの設定
+```bash
+aws s3api put-bucket-policy \
+  --bucket your-portfolio-bucket \
+  --policy file://bucket-policy.json
+```
+
+### Step 3: ファイルのアップロード
+```bash
+npm run build
+aws s3 sync out/ s3://your-portfolio-bucket/ --delete
+```
+
+### Step 4: CloudFrontディストリビューションの作成
+- マネジメントコンソールまたはAWS CLIで作成
+- SSL証明書（ACM）の設定
+- カスタムドメインの設定
+
+### Step 5: Lambda関数のデプロイ
+```bash
+cd lambda/contact-handler
+npm install
+zip -r contact-handler.zip .
+
+aws lambda create-function \
+  --function-name contact-handler \
+  --runtime nodejs20.x \
+  --role arn:aws:iam::ACCOUNT_ID:role/lambda-contact-role \
+  --handler index.handler \
+  --zip-file fileb://contact-handler.zip
+```
+
+### Step 6: API Gatewayの設定
+- REST APIの作成
+- Lambdaとの統合
+- CORSの有効化
+- ステージのデプロイ
+
+### Step 7: SESの設定
+```bash
+aws ses verify-email-identity \
+  --email-address your-email@example.com \
+  --region ap-northeast-1
+```
+
+## 🔄 CI/CD（GitHub Actions）
+
+`.github/workflows/deploy.yml` が自動デプロイを実行します。
+
+**トリガー:**
+- `main` ブランチへのプッシュ
+
+**実行内容:**
+1. Next.jsのビルド
+2. S3へのファイル同期
+3. CloudFrontキャッシュの無効化
+
+**必要なシークレット:**
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `S3_BUCKET`
+- `CLOUDFRONT_DISTRIBUTION_ID`
+
+## 📊 機能一覧
+
+- ✅ レスポンシブデザイン
+- ✅ お問い合わせフォーム（Lambda + SES）
+- ✅ 訪問者カウンター（Lambda + DynamoDB）
+- ✅ HTTPS対応（CloudFront + ACM）
+- ✅ 独自ドメイン対応（Route 53）
+- ✅ 自動デプロイ（GitHub Actions）
+
+## 🔐 セキュリティ
+
+- CloudFrontでHTTPS強制
+- API GatewayでCORS設定
+- IAMロールで最小権限の原則
+- 環境変数で機密情報を管理
+- S3バケットのパブリックアクセス制御
+
+## 💰 コスト試算
+
+**月間想定コスト（低トラフィック）:**
+- S3: ~$0.50
+- CloudFront: ~$1.00
+- Lambda: 無料枠内
+- API Gateway: 無料枠内
+- Route 53: ~$0.50
+- SES: 無料枠内
+- DynamoDB: 無料枠内
+
+**合計: 約 $2-3/月**
+
+## 📝 ライセンス
+
+MIT License
