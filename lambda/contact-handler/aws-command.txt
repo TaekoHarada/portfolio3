@@ -1,0 +1,34 @@
+
+## 問合せフォーム SES+Lambda 設定用
+
+# ロールを作成
+aws iam create-role \
+  --role-name lambda-contact-handler-role \
+  --assume-role-policy-document file://trust-policy.json
+
+# CloudWatch Logsへの書き込み権限を付与
+aws iam attach-role-policy \
+  --role-name lambda-contact-handler-role \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+# SES送信権限を付与
+aws iam attach-role-policy \
+  --role-name lambda-contact-handler-role \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSESFullAccess
+
+# Lambda関数を作成
+aws lambda create-function \
+  --function-name contact-handler \
+  --runtime nodejs20.x \
+  --role arn:aws:iam::[YOUR_ACCOUNT_ID]:role/lambda-contact-handler-role \
+  --handler index.handler \
+  --zip-file fileb://contact-handler.zip \
+  --region ap-northeast-1
+
+  # SESのセットアップ
+  # 送信元メールアドレスを検証
+aws ses verify-email-identity \
+  --email-address your-email@example.com \
+  --region ap-northeast-1
+
+  

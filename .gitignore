@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lambda
+/lambda/contact-handler/node_modules
+/lambda/contact-handler/.env.local

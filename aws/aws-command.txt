@@ -1,0 +1,22 @@
+# S3バケットを作成 (静的ホスト先)
+aws s3 mb s3://taekoharada-portfolio-bucket --region ap-northeast-1
+
+# 静的ウェブサイトホスティングを有効化
+aws s3 website s3://your-portfolio-bucket-name \
+  --index-document index.html \
+  --error-document 404.html
+
+# パブリックアクセスブロックを解除
+aws s3api put-public-access-block \
+    --bucket your-portfolio-bucket-name \
+    --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false" \
+    --profile my-project
+
+# ホスティング用バケットポリシー適用
+aws s3api put-bucket-policy \
+  --bucket your-portfolio-bucket-name \
+  --policy file://website-bucket-policy.json
+
+# ファイルをS3にアップロード
+aws s3 sync out/ s3://your-portfolio-bucket-name/ --delete
+
