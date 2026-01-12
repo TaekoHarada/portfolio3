@@ -31,4 +31,42 @@ aws ses verify-email-identity \
   --email-address your-email@example.com \
   --region ap-northeast-1
 
-  
+
+
+# API Gatewayの作成
+# REST APIを作成
+aws apigateway create-rest-api \
+  --name portfolio-contact-api \
+  --region ap-northeast-1
+
+# ルートのリソースIDを取得 API_ID = vm9tlxagfk
+aws apigateway get-resources \
+  --rest-api-id API_ID \
+  --region ap-northeast-1
+
+# /contact リソースを作成 ROOT_RESOURCE_ID="r0kyjivg3h"
+aws apigateway create-resource \
+  --rest-api-id API_ID \
+  --parent-id ROOT_RESOURCE_ID \
+  --path-part contact \
+  --region ap-northeast-1
+```
+{
+    "id": "w9hv25",
+    "parentId": "r0kyjivg3h",
+    "pathPart": "contact",
+    "path": "/contact"
+}
+
+# この後、POSTメソッドの設定やLambda統合の設定が続きますが、**マネジメントコンソールで設定する方が簡単**です。
+# API Gateway コンソール設定
+# POSTメソッドの作成 + prod にデプロイ + CORSを有効化
+
+
+
+
+## Step 7: フロントエンド側の修正
+
+`.env.local`:
+```
+NEXT_PUBLIC_API_ENDPOINT=https://API_ID.execute-api.ap-northeast-1.amazonaws.com/prod

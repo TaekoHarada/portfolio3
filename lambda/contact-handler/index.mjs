@@ -1,6 +1,6 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-const ses = new SESClient({ region: "ap-northeast-1" }); // または us-east-1
+const ses = new SESClient({ region: "ap-northeast-1" });
 
 export const handler = async (event) => {
   // CORSヘッダー
@@ -11,7 +11,7 @@ export const handler = async (event) => {
   };
 
   // OPTIONSリクエスト（プリフライト）対応
-  if (event.httpMethod === "OPTIONS") {
+  if (event.requestContext?.http?.method === "OPTIONS") {
     return {
       statusCode: 200,
       headers,
@@ -20,11 +20,13 @@ export const handler = async (event) => {
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const { name, email, message } = body;
+    // Lambda統合の場合、eventがそのままリクエストボディ
+    const { email, subject, message } = event;
+
+    console.log("Received data:", { email, subject, message });
 
     // バリデーション
-    if (!name || !email || !message) {
+    if (!email || !subject || !message) {
       return {
         statusCode: 400,
         headers,
@@ -40,14 +42,14 @@ export const handler = async (event) => {
       },
       Message: {
         Subject: {
-          Data: `【ポートフォリオ】${name}様からのお問い合わせ`,
+          Data: `【ポートフォリオ】${subject}`,
           Charset: "UTF-8",
         },
         Body: {
           Text: {
             Data: `
-名前: ${name}
 メールアドレス: ${email}
+件名: ${subject}
 
 メッセージ:
 ${message}

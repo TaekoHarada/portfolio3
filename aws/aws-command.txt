@@ -20,3 +20,6 @@ aws s3api put-bucket-policy \
 # ファイルをS3にアップロード
 aws s3 sync out/ s3://your-portfolio-bucket-name/ --delete
 
+# CloudFront ディストリビューション作成
+
+# 

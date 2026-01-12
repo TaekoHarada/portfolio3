@@ -29,7 +29,9 @@ const Contact: React.FC = () => {
       message: (e.target as HTMLFormElement).message.value,
     };
     const JSONdata = JSON.stringify(data);
-    const endpoint = "/api/send";
+
+    // 環境変数からAPI GatewayのエンドポイントURLを取得
+    const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/contact`;
 
     const options = {
       method: "POST",
@@ -38,6 +40,7 @@ const Contact: React.FC = () => {
       },
       body: JSONdata,
     };
+
     try {
       setIsLoading(true);
       const response = await fetch(endpoint, options);
@@ -160,18 +163,7 @@ const Contact: React.FC = () => {
           )}
         </form>
 
-        <div className="flex flex-wrap  items-center mt-5">
-          {/* <div className="mr-3">
-            <Link
-              href="./docs/Resume-TaekoHarada.pdf"
-              target="_blank"
-              rel="Resume-Taeko-Harada"
-            >
-              <div className="underline decoration-gray-400 hover:opacity-50 px-5 py-2">
-                Download Resume
-              </div>
-            </Link>
-          </div> */}
+        <div className="flex flex-wrap items-center mt-5">
           <div className="flex mt-3 sm:mt-0">
             <div className="mr-2 text-gray-800 hover:opacity-70">
               <Link
