@@ -1,0 +1,83 @@
+# ロール作成
+aws iam create-role \
+  --role-name lambda-visitor-counter-role \
+  --assume-role-policy-document file://lambda-trust-policy.json
+
+# ポリシーをロールにアタッチ
+aws iam put-role-policy \
+  --role-name lambda-visitor-counter-role \
+  --policy-name DynamoDBAccess \
+  --policy-document file://lambda-dynamodb-policy.json
+
+# package.json を修正
+
+# 依存関係をインストール
+npm install
+
+# デプロイパッケージを作成
+zip -r function.zip .
+
+# Lambda関数を作成
+aws lambda create-function \
+  --function-name portfolio-visitor-counter \
+  --runtime nodejs22.x \
+  --role arn:aws:iam::983477212136:role/lambda-visitor-counter-role \
+  --handler index.handler \
+  --zip-file fileb://function.zip \
+  --region ap-northeast-1 \
+  --timeout 10 \
+  --memory-size 128
+
+# または既に存在する場合は更新
+aws lambda update-function-code \
+  --function-name portfolio-visitor-counter \
+  --zip-file fileb://function.zip \
+  --region ap-northeast-1
+
+
+# API Gateway 作成
+# REST APIを作成
+aws apigateway create-rest-api \
+  --name "portfolio-api" \
+  --description "Portfolio website API" \
+  --region ap-northeast-1
+
+# API IDを取得してメモ -> jg10xmsgj1
+API_ID="YOUR_API_ID"
+
+# ルートリソースIDを取得 -> 5wfchqbiz8
+ROOT_ID=$(aws apigateway get-resources \
+  --rest-api-id $API_ID \
+  --region ap-northeast-1 \
+  --query 'items[?path==`/`].id' \
+  --output text)
+
+# /visitor リソースを作成  
+aws apigateway create-resource \
+  --rest-api-id $API_ID \
+  --parent-id $ROOT_ID \
+  --path-part visitor \
+  --region ap-northeast-1
+
+# リソースIDを取得 -> ddtn3j
+RESOURCE_ID=$(aws apigateway get-resources \
+  --rest-api-id $API_ID \
+  --region ap-northeast-1 \
+  --query 'items[?path==`/visitor`].id' \
+  --output text)
+
+# GETメソッドを作成
+aws apigateway put-method \
+  --rest-api-id $API_ID \
+  --resource-id $RESOURCE_ID \
+  --http-method GET \
+  --authorization-type NONE \
+  --region ap-northeast-1
+
+# OPTIONSメソッドを作成(CORS用)
+aws apigateway put-method \
+  --rest-api-id $API_ID \
+  --resource-id $RESOURCE_ID \
+  --http-method OPTIONS \
+  --authorization-type NONE \
+  --region ap-northeast-1

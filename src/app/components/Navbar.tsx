@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import NavLink from "./NavLink";
 import MenuOverlay from "./MenuOverlay";
+import VisitorCounter from "./VisitorCounter";
 
 // Menu items
 const menuItems = [
@@ -28,6 +29,7 @@ const Navbar: React.FC = () => {
             </span>
           </div>
         </Link>
+        <VisitorCounter />
 
         {/* For mobile */}
         <div className="mobile-menu block md:hidden">

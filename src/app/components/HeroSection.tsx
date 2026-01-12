@@ -14,7 +14,6 @@ const HeroSection: React.FC = () => {
           <h1 className="text-customGray text-2xl sm:text-3xl lg:text-4xl mb-5 font-semibold fadeLeft">
             Welcome to my portfolio!
           </h1>
-
           <div className="text-customGray text-lg lg:text-xl sm:mt-8 sm:mb-12 fadeLeft">
             A versatile professional with a strong background in System
             Administration and a recent intensive focus on Web Development at
@@ -22,16 +21,24 @@ const HeroSection: React.FC = () => {
             between technical requirements and user needs through effective
             communication.
             <div className="mt-5">
-              This portfolio is built on a serverless AWS architecture,
-              demonstrating my hands-on expertise in:
+              This portfolio is built on:
               <ul className="mt-5">
                 <li className="mb-2">
                   <i>Frontend: </i>
                   <b>Next.js 14, TypeScript, and Tailwind CSS</b>
                 </li>
                 <li className="mb-2">
-                  <i>AWS Infrastructure: </i>
+                  <i>AWS: </i>
                   <b>S3, CloudFront, SES, Lambda, and API Gateway</b>
+                </li>
+                <li className="mb-2, underline">
+                  <Link
+                    href="https://github.com/TaekoHarada/portfolio3"
+                    target="_blank"
+                    rel="LindedIn Taeko Harada"
+                  >
+                    Portfolio Github repository
+                  </Link>
                 </li>
               </ul>
             </div>

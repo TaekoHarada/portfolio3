@@ -31,7 +31,7 @@ const Contact: React.FC = () => {
     const JSONdata = JSON.stringify(data);
 
     // 環境変数からAPI GatewayのエンドポイントURLを取得
-    const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/contact`;
+    const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_CONTACT}/contact`;
 
     const options = {
       method: "POST",

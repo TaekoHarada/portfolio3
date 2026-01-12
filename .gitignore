@@ -38,3 +38,5 @@ next-env.d.ts
 # lambda
 /lambda/contact-handler/node_modules
 /lambda/contact-handler/.env.local
+/lambda/visitor-counter/node_modules
+/lambda/visitor-counter/.env.local
