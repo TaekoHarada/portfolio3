@@ -30,10 +30,10 @@ export default function Home() {
       <Navbar />
       <div className="container mx-auto px-auto py-5 mt-20 sm:mt-0 ">
         <HeroSection />
-        <ProjectsSection />
         <AboutSection />
-        <NewsSection />
         <Contact />
+        <ProjectsSection />
+        <NewsSection />
       </div>
       <Footer />
     </main>

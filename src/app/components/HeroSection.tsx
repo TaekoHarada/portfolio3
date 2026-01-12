@@ -12,14 +12,29 @@ const HeroSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 px-10 sm:px-20">
         <div className="col-span-6 place-self-center">
           <h1 className="text-customGray text-2xl sm:text-3xl lg:text-4xl mb-5 font-semibold fadeLeft">
-            Hello, I am Taeko.
+            Welcome to my portfolio!
           </h1>
 
           <div className="text-customGray text-lg lg:text-xl sm:mt-8 sm:mb-12 fadeLeft">
-            With a background as a System and Application Administrator in Japan
-            and recent graduation from the Software Development program at SAIT
-            in Calgary, I am passionate about contributing to IT systems and
-            software development to help businesses grow efficiently.
+            A versatile professional with a strong background in System
+            Administration and a recent intensive focus on Web Development at
+            SAIT in Canada.<br></br> My core strength is bridging the gap
+            between technical requirements and user needs through effective
+            communication.
+            <div className="mt-5">
+              This portfolio is built on a serverless AWS architecture,
+              demonstrating my hands-on expertise in:
+              <ul className="mt-5">
+                <li className="mb-2">
+                  <i>Frontend: </i>
+                  <b>Next.js 14, TypeScript, and Tailwind CSS</b>
+                </li>
+                <li className="mb-2">
+                  <i>AWS Infrastructure: </i>
+                  <b>S3, CloudFront, SES, Lambda, and API Gateway</b>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center mt-5 fadeLeft">

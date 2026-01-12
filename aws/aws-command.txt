@@ -22,4 +22,5 @@ aws s3 sync out/ s3://your-portfolio-bucket-name/ --delete
 
 # CloudFront ディストリビューション作成
 
-# 
+# Github Actions にコミット時にCloudFrontのキャッシュをクリアするワークフローを追加
+

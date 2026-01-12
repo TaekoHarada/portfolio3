@@ -27,7 +27,8 @@ const AboutSection: React.FC = () => {
               <div className="text-lg">Experiences</div>
             </div>
             <ul className="mt-5 ml-7">
-              <li className="mb-2">Math Tutor (May 2011 - Dec 2011)</li>
+              <li className="mb-2">AWS Administrator (Sep 2025 - Present)</li>
+              <li className="mb-2">Web Developer (Mar 2025 - Present)</li>
               <li className="mb-2">
                 System Administrator (Feb 2009 - Feb 2011)
               </li>
@@ -44,15 +45,17 @@ const AboutSection: React.FC = () => {
               <div className="w-6 mr-2 text-gray-800">
                 <FontAwesomeIcon icon={faCode} />
               </div>
-              <div className="text-lg">Skills</div>
+              <div className="text-lg">Technical Skills</div>
             </div>
             <ul className="mt-5 ml-7">
               <li className="mb-2">
-                JavaScript, TypeScript - React, Next.js, Node.js
+                Languages: JavaScript, TypeScript, Python, Java
               </li>
-              <li className="mb-2">Python</li>
-              <li className="mb-2">Java - Selenium</li>
-              <li className="mb-2">Linux</li>
+              <li className="mb-2">Frameworks: React, Next.js, Node.js</li>
+              <li className="mb-2">Cloud:AWS</li>
+              <li className="mb-2">
+                Others: System Design, Troubleshooting, Technical Communication
+              </li>
             </ul>
           </div>
         </div>
@@ -93,6 +96,9 @@ const AboutSection: React.FC = () => {
               <div className="text-lg">Certifications</div>
             </div>
             <ul className="mt-5 ml-7">
+              <li className="mb-2">
+                AWS Solution Architect - Associate (2025)
+              </li>
               <li className="mb-2">Google IT Support Specialist (2025)</li>
               <li className="mb-2">
                 AZ-900 Microsoft Azure Fundamentals (2025)
