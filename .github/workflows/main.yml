@@ -1,0 +1,9 @@
+env:
+  CLOUDFRONT_DISTRIBUTION_ID: EX00FOHSA7GIA
+
+steps:
+  - name: Invalidate CloudFront
+    run: |
+      aws cloudfront create-invalidation \
+        --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+        --paths "/*"
