@@ -10,7 +10,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = "portfolio-visitor-count";
 const ALLOWED_ORIGINS = [
-  "https://YOUR_CLOUDFRONT_DOMAIN.cloudfront.net",
+  "https://dj40d41lmkwi.cloudfront.net",
   "http://localhost:3000", // 開発環境用
 ];
 
