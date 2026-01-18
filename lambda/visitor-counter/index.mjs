@@ -4,15 +4,15 @@ import {
   GetCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
+// 環境変数から取得
+const REGION = process.env.REGION || "ap-northeast-1";
+const TABLE_NAME = process.env.TABLE_NAME;
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["https://dj40d41lmkwi.cloudfront.net", "http://localhost:3000"];
 
-const client = new DynamoDBClient({ region: "ap-northeast-1" });
+const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = "portfolio-visitor-count";
-const ALLOWED_ORIGINS = [
-  "https://dj40d41lmkwi.cloudfront.net",
-  "http://localhost:3000", // 開発環境用
-];
 
 export const handler = async (event) => {
   console.log("Event:", JSON.stringify(event, null, 2));
