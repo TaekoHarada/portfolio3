@@ -13,7 +13,6 @@ AWS クラウドサービスを活用した個人ポートフォリオサイト�
 │  S3 Bucket      │ (静的サイトホスティング)
 │  (Next.js)      │
 └─────────────────┘
-
        │ お問い合わせ
        ▼
 ┌─────────────────┐
@@ -27,7 +26,6 @@ AWS クラウドサービスを活用した個人ポートフォリオサイト�
 ┌──────▼──────────┐
 │  SES            │ (メール送信)
 └─────────────────┘
-
        │ 訪問者カウント
        ▼
 ┌─────────────────┐
@@ -52,6 +50,7 @@ AWS クラウドサービスを活用した個人ポートフォリオサイト�
 - **SES** - メール送信サービス
 - **DynamoDB** - 訪問者数カウンター
 - **IAM** - アクセス制御
+- **AWS CDK** - Infrastructure as Code（TypeScript）
 
 ### CI/CD
 
@@ -64,6 +63,7 @@ AWS クラウドサービスを活用した個人ポートフォリオサイト�
 - npm または yarn
 - AWS アカウント
 - AWS CLI 設定済み
+- AWS CDK CLI (`npm install -g aws-cdk`)
 - Git
 
 ## 🚀 ローカル開発
@@ -77,8 +77,18 @@ cd portfolio3
 
 ### 2. 依存関係のインストール
 
+#### フロントエンド
+
 ```bash
 npm install
+```
+
+#### CDK（インフラ）
+
+```bash
+cd cdk
+npm install
+cd ..
 ```
 
 ### 3. 環境変数の設定
@@ -108,17 +118,90 @@ npm run build
 
 ## 📦 デプロイ手順
 
-### Step 1: S3 バケットの作成
+### 🆕 CDKを使ったデプロイ（推奨）
+
+AWS CDKを使用することで、インフラをコードで管理し、再現可能なデプロイが可能になります。
+
+#### Step 1: AWS CDK CLI のインストール
+
+```bash
+npm install -g aws-cdk
+```
+
+#### Step 2: AWSアカウントのブートストラップ（初回のみ）
+
+```bash
+# アカウントIDを確認
+aws sts get-caller-identity --query Account --output text
+
+# ブートストラップ実行
+cdk bootstrap aws://ACCOUNT-ID/ap-northeast-1
+```
+
+#### Step 3: CDKプロジェクトのビルド
+
+```bash
+cd cdk
+npm run build
+```
+
+#### Step 4: デプロイ前の確認
+
+```bash
+# 差分を確認
+cdk diff
+
+# CloudFormationテンプレートを生成
+cdk synth
+```
+
+#### Step 5: インフラのデプロイ
+
+```bash
+# DynamoDBテーブルをデプロイ
+cdk deploy
+
+# 確認メッセージで 'y' を入力
+```
+
+#### Step 6: 初期データの投入
+
+```bash
+# 訪問者カウンターの初期値を設定
+aws dynamodb put-item \
+  --table-name portfolio-visitor-count \
+  --item '{"id": {"S": "total"}, "count": {"N": "0"}}' \
+  --region ap-northeast-1
+```
+
+#### Step 7: フロントエンドのデプロイ
+
+```bash
+# プロジェクトルートに戻る
+cd ..
+
+# Next.jsをビルド
+npm run build
+
+# S3にアップロード
+aws s3 sync out/ s3://your-portfolio-bucket/ --delete
+```
+
+### 従来の方法（AWS CLI）
+
+<details>
+<summary>AWS CLIを使った手動デプロイ手順（クリックして展開）</summary>
+
+#### Step 1: S3 バケットの作成
 
 ```bash
 aws s3 mb s3://your-portfolio-bucket --region ap-northeast-1
-
 aws s3 website s3://your-portfolio-bucket \
   --index-document index.html \
   --error-document 404.html
 ```
 
-### Step 2: バケットポリシーの設定
+#### Step 2: バケットポリシーの設定
 
 ```bash
 aws s3api put-bucket-policy \
@@ -126,26 +209,44 @@ aws s3api put-bucket-policy \
   --policy file://bucket-policy.json
 ```
 
-### Step 3: ファイルのアップロード
+#### Step 3: ファイルのアップロード
 
 ```bash
 npm run build
 aws s3 sync out/ s3://your-portfolio-bucket/ --delete
 ```
 
-### Step 4: CloudFront ディストリビューションの作成
+#### Step 4: CloudFront ディストリビューションの作成
 
 - マネジメントコンソールまたは AWS CLI で作成
 - SSL 証明書（ACM）の設定
 - カスタムドメインの設定
 
-### Step 5: Lambda 関数のデプロイ
+#### Step 5: DynamoDB テーブルの作成
+
+```bash
+aws dynamodb create-table \
+  --table-name portfolio-visitor-count \
+  --attribute-definitions \
+    AttributeName=id,AttributeType=S \
+  --key-schema \
+    AttributeName=id,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region ap-northeast-1
+
+# 初期値を設定
+aws dynamodb put-item \
+  --table-name portfolio-visitor-count \
+  --item '{"id": {"S": "total"}, "count": {"N": "0"}}' \
+  --region ap-northeast-1
+```
+
+#### Step 6: Lambda 関数のデプロイ
 
 ```bash
 cd lambda/contact-handler
 npm install
 zip -r contact-handler.zip .
-
 aws lambda create-function \
   --function-name contact-handler \
   --runtime nodejs22.x \
@@ -154,20 +255,47 @@ aws lambda create-function \
   --zip-file fileb://contact-handler.zip
 ```
 
-### Step 6: API Gateway の設定
+#### Step 7: API Gateway の設定
 
 - REST API の作成
 - Lambda との統合
 - CORS の有効化
 - ステージのデプロイ
 
-### Step 7: SES の設定
+#### Step 8: SES の設定
 
 ```bash
 aws ses verify-email-identity \
   --email-address your-email@example.com \
   --region ap-northeast-1
 ```
+
+</details>
+
+## 🏗️ CDKプロジェクト構成
+
+```
+cdk/
+├── bin/
+│   └── cdk.ts              # CDKアプリのエントリーポイント
+├── lib/
+│   └── cdk-stack.ts        # インフラスタック定義
+├── test/
+│   └── cdk.test.ts         # ユニットテスト
+├── cdk.json                # CDK設定
+├── package.json
+└── tsconfig.json
+```
+
+### 現在CDKで管理されているリソース
+
+- ✅ **DynamoDB** - 訪問者カウンターテーブル
+
+### 今後CDKで管理予定のリソース
+
+- ⏳ **Lambda** - サーバーレス関数
+- ⏳ **API Gateway** - REST APIエンドポイント
+- ⏳ **S3 & CloudFront** - 静的サイトホスティング
 
 ## 🔄 CI/CD（GitHub Actions）
 
@@ -199,6 +327,7 @@ aws ses verify-email-identity \
 - ✅ HTTPS 対応（CloudFront + ACM）
 - ✅ 独自ドメイン対応（Route 53）
 - ✅ 自動デプロイ（GitHub Actions）
+- ✅ Infrastructure as Code（AWS CDK）
 
 ## 🔐 セキュリティ
 
@@ -207,6 +336,28 @@ aws ses verify-email-identity \
 - IAM ロールで最小権限の原則
 - 環境変数で機密情報を管理
 - S3 バケットのパブリックアクセス制御
+- CDKでインフラ構成を明示的に管理
+
+## 🛠️ CDK便利コマンド
+
+```bash
+cd cdk
+
+# インフラの差分確認
+npm run build && cdk diff
+
+# CloudFormationテンプレート生成
+cdk synth
+
+# デプロイ
+cdk deploy
+
+# スタック削除（注意：DynamoDBテーブルは保持されます）
+cdk destroy
+
+# すべてのスタックをリスト表示
+cdk list
+```
 
 ## 💰 コスト試算
 
@@ -221,6 +372,11 @@ aws ses verify-email-identity \
 - DynamoDB: 無料枠内
 
 **合計: 約 $2-3/月**
+
+## 📚 参考リンク
+
+- [AWS CDK Documentation](https://docs.aws.amazon.com/cdk/)
+- [AWS CDK Workshop](https://cdkworkshop.com/)
 
 ## 📝 ライセンス
 
