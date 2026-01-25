@@ -30,7 +30,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               alt={title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-slate-700/70 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-700/70 flex items-center justify-center p-4 rounded-md">
               <p className="text-white text-center text-sm sm:text-base lg:text-lg font-semibold leading-tight">
                 {title}
               </p>

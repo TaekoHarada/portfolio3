@@ -23,7 +23,7 @@ aws s3 sync out/ s3://your-portfolio-bucket-name/ --delete
 # CloudFront ディストリビューション作成
 
 # Github Actions にコミット時にCloudFrontのキャッシュをクリアするワークフローを追加
-
+aws cloudfront create-invalidation --distribution-id <your distribution ID> --paths "/*"
 
 # テーブル作成
 aws dynamodb create-table \

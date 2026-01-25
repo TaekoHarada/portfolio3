@@ -23,11 +23,18 @@ const projects = [
   },
   {
     id: 3,
-    title: "Expense Tracker",
-    description: "CRUD App (React + TypeScript + Firebase + bootstrap 5)",
-    appLink: "https://expense-tracker-8205b.web.app/",
-    gitHubLink: "https://github.com/TaekoHarada/expense_tracker",
+    title: "Focus Time - Pomodoro Timer (Claude Code)",
+    description: "Pomodoro Timer App built using Claude Code (Next.js + MySQL)",
+    appLink: "https://github.com/TaekoHarada/focus-time-app",
+    gitHubLink: "https://github.com/TaekoHarada/focus-time-app",
   },
+  // {
+  //   id: 3,
+  //   title: "Expense Tracker",
+  //   description: "CRUD App (React + TypeScript + Firebase + bootstrap 5)",
+  //   appLink: "https://expense-tracker-8205b.web.app/",
+  //   gitHubLink: "https://github.com/TaekoHarada/expense_tracker",
+  // },
   // {
   //   id: 4,
   //   title: "Let's Cook!",
