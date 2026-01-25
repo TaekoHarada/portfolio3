@@ -1,9 +1,15 @@
 env:
   CLOUDFRONT_DISTRIBUTION_ID: EX00FOHSA7GIA
 
-steps:
-  - name: Invalidate CloudFront
-    run: |
-      aws cloudfront create-invalidation \
-        --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
-        --paths "/*" --profile my-project
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
